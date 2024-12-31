@@ -26,9 +26,9 @@ Returns details for a specific state by its clave (ID).
 
 #### List all Municipios
 ```
-GET /api/v1/municipios
+GET /api/v1/municipios?clave_estado=XX
 ```
-Returns a list of all municipalities across Mexico.
+Returns a list of all municipalities across Mexico. The `clave_estado` parameter is required.
 
 #### List Municipios in an Estado
 ```
@@ -40,7 +40,7 @@ Returns all municipalities within a specific state.
 ```
 GET /api/v1/municipios/:clave?clave_estado=XX
 ```
-Returns details for a specific municipality. Requires `clave_estado` parameter.
+Returns details for a specific municipality. The `clave_estado` parameter is required.
 
 #### Search Municipios
 ```

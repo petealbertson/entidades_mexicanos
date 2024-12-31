@@ -1,31 +1,29 @@
 module Api
   module V1
     class MunicipiosController < ApplicationController
-      before_action :set_estado, if: -> { params[:estado_id].present? }
-
       def index
-        if params[:estado_id]
-          @municipios = @estado.municipios
-        else
-          @municipios = Municipio.all
+        estado_clave = params[:estado_id] || params[:clave_estado]
+        
+        unless estado_clave.present?
+          render json: { error: "estado_id or clave_estado parameter is required" }, status: :unprocessable_entity
+          return
         end
+
+        @estado = Estado.find_by!(clave: estado_clave)
+        @municipios = @estado.municipios
         render json: @municipios
       end
 
       def show
-        if params[:estado_id]
-          @municipio = @estado.municipios.find_by!(clave: params[:id])
-        else
-          unless params[:clave_estado].present?
-            render json: { error: "clave_estado parameter is required" }, status: :unprocessable_entity
-            return
-          end
-
-          @municipio = Municipio.joins(:estado)
-                              .where(clave: params[:id])
-                              .where(estados: { clave: params[:clave_estado] })
-                              .first!
+        estado_clave = params[:estado_id] || params[:clave_estado]
+        
+        unless estado_clave.present?
+          render json: { error: "estado_id or clave_estado parameter is required" }, status: :unprocessable_entity
+          return
         end
+
+        @estado = Estado.find_by!(clave: estado_clave)
+        @municipio = @estado.municipios.find_by!(clave: params[:id])
         render json: @municipio, include: [:estado, :colonias]
       end
 
