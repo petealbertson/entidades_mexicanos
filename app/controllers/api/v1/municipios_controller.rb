@@ -1,7 +1,7 @@
 module Api
   module V1
     class MunicipiosController < ApplicationController
-      before_action :set_estado, except: [:index, :show, :search]
+      before_action :set_estado, if: -> { params[:estado_id].present? }
 
       def index
         if params[:estado_id]

@@ -1,15 +1,17 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  nombre: MyString
-  latitud: 9.99
-  longitud: 9.99
-  altitud_msm: 9.99
+  nombre: "Centro"
+  clave: "0001"
   municipio: one
+  latitud: "19.5438"
+  longitud: "-96.9102"
+  altitud_msm: "1427"
 
 two:
-  nombre: MyString
-  latitud: 9.99
-  longitud: 9.99
-  altitud_msm: 9.99
+  nombre: "Zona Centro"
+  clave: "0001"
   municipio: two
+  latitud: "21.8818"
+  longitud: "-102.2916"
+  altitud_msm: "1888"
