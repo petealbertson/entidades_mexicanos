@@ -2,6 +2,10 @@
 
 This API provides access to Mexican geographic data, including estados (states), municipios (municipalities), and colonias (neighborhoods).
 
+## Important Note
+
+This API deliberately excludes population data. Population statistics become outdated very quickly after publication, and maintaining current population data would require constant updates. For the most up-to-date population information, please refer to INEGI's official population statistics.
+
 ## API Endpoints
 
 ### Estados (States)
