@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  nombre: MyString
+  latitud: 9.99
+  longitud: 9.99
+  altitud_msm: 9.99
+  municipio: one
+
+two:
+  nombre: MyString
+  latitud: 9.99
+  longitud: 9.99
+  altitud_msm: 9.99
+  municipio: two
