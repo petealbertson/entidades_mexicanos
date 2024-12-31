@@ -3,6 +3,19 @@
 # If running the rails server then create or migrate existing database
 if [ "${1}" == "./bin/rails" ] && [ "${2}" == "server" ]; then
   ./bin/rails db:prepare
+
+  # Create data directory if it doesn't exist
+  mkdir -p /data
+
+  # Download INEGI data if it doesn't exist
+  if [ ! -f /data/inegi.csv ]; then
+    echo "Downloading INEGI data..."
+    curl -L -o /data/inegi.csv "$INEGI_DATA_URL"
+    
+    # Import the data
+    echo "Importing INEGI data..."
+    ./bin/rails "inegi:import[/data/inegi.csv]"
+  fi
 fi
 
 exec "${@}"
