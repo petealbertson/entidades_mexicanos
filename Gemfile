@@ -39,10 +39,14 @@ gem "bootsnap", require: false
 gem 'roo', '~> 2.10.0'  # For Excel files
 gem 'creek', '~> 2.6'   # Alternative Excel parser, better for large files
 gem 'smarter_csv', '~> 1.9'  # Enhanced CSV parsing
+gem 'rack-attack'
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
-  gem "debug", platforms: %i[ mri mswin mswin64 mingw x64_mingw ]
+  gem 'debug', platforms: %i[ mri mingw x64_mingw ]
+  gem 'minitest-rails'
+  gem 'minitest-reporters'
+  gem 'mocha'
 end
 
 group :development do

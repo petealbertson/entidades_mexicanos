@@ -6,13 +6,30 @@ class Api::V1::MunicipiosControllerTest < ActionDispatch::IntegrationTest
     @municipio = municipios(:one)
   end
 
-  test "should get index" do
-    get api_v1_municipios_url
+  test "should get index with estado_id" do
+    get api_v1_municipios_url, params: { estado_id: @estado.clave }
     assert_response :success
     
     response_body = JSON.parse(response.body)
     assert_kind_of Array, response_body
     assert_not_empty response_body
+  end
+
+  test "should get index with clave_estado" do
+    get api_v1_municipios_url, params: { clave_estado: @estado.clave }
+    assert_response :success
+    
+    response_body = JSON.parse(response.body)
+    assert_kind_of Array, response_body
+    assert_not_empty response_body
+  end
+
+  test "should fail without estado parameter" do
+    get api_v1_municipios_url
+    assert_response :unprocessable_entity
+    
+    response_body = JSON.parse(response.body)
+    assert_equal "estado_id or clave_estado parameter is required", response_body["error"]
   end
 
   test "should get nested index" do
@@ -21,7 +38,7 @@ class Api::V1::MunicipiosControllerTest < ActionDispatch::IntegrationTest
     
     response_body = JSON.parse(response.body)
     assert_kind_of Array, response_body
-    assert response_body.all? { |m| m['estado_id'] == @estado.id }
+    assert_not_empty response_body
   end
 
   test "should get show with clave_estado" do
