@@ -8,6 +8,20 @@ jobs:
   deploy:
     name: Deploy app
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v3
 
@@ -17,7 +31,18 @@ jobs:
           ruby-version: '3.3.1'
           bundler-cache: true
 
+      - name: Set up database
+        env:
+          RAILS_ENV: test
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/mexico_test
+        run: |
+          bundle exec rails db:create
+          bundle exec rails db:schema:load
+
       - name: Run tests
+        env:
+          RAILS_ENV: test
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/mexico_test
         run: |
           bundle install
           bundle exec rails test
