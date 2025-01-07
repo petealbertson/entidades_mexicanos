@@ -2,7 +2,7 @@ module Api
   module V1
     class EstadosController < ApplicationController
       def index
-        @estados = Estado.order(:clave)
+        @estados = Estado.order(Arel.sql("CAST(clave AS INTEGER)"))
         render json: @estados
       end
 

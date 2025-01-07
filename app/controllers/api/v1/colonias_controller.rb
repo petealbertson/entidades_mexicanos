@@ -5,9 +5,9 @@ module Api
 
       def index
         if params[:municipio_id]
-          @colonias = @municipio.colonias.order(:clave)
+          @colonias = @municipio.colonias.order(Arel.sql("CAST(clave AS INTEGER)"))
         else
-          @colonias = Colonia.order(:clave)
+          @colonias = Colonia.order(Arel.sql("CAST(clave AS INTEGER)"))
         end
         render json: @colonias
       end

@@ -10,7 +10,7 @@ module Api
         end
 
         @estado = Estado.find_by!(clave: estado_clave)
-        @municipios = @estado.municipios.order(:clave)
+        @municipios = @estado.municipios.order(Arel.sql("CAST(clave AS INTEGER)"))
         render json: @municipios
       end
 
