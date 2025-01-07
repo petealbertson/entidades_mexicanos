@@ -10,7 +10,7 @@ module Api
         end
 
         @estado = Estado.find_by!(clave: estado_clave)
-        @municipios = @estado.municipios
+        @municipios = @estado.municipios.order(:clave)
         render json: @municipios
       end
 

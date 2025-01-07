@@ -5,9 +5,9 @@ module Api
 
       def index
         if params[:municipio_id]
-          @colonias = @municipio.colonias
+          @colonias = @municipio.colonias.order(:clave)
         else
-          @colonias = Colonia.all
+          @colonias = Colonia.order(:clave)
         end
         render json: @colonias
       end

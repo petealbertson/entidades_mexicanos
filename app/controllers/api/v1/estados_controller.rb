@@ -2,7 +2,7 @@ module Api
   module V1
     class EstadosController < ApplicationController
       def index
-        @estados = Estado.all
+        @estados = Estado.order(:clave)
         render json: @estados
       end
 
