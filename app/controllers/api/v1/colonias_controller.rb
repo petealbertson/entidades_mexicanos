@@ -9,13 +9,13 @@ module Api
         else
           @colonias = Colonia.order(Arel.sql("CAST(clave AS INTEGER)"))
         end
-        render json: @colonias
+        render json: @colonias, except: [:created_at, :updated_at]
       end
 
       def show
         if params[:municipio_id]
           @colonia = @municipio.colonias.find_by!(clave: params[:id])
-          render json: @colonia, include: { municipio: { include: :estado } }
+          render json: @colonia, include: { municipio: { include: :estado } }, except: [:created_at, :updated_at]
         else
           unless params[:clave_estado].present?
             render json: { error: "clave_estado parameter is required" }, status: :unprocessable_entity
@@ -27,7 +27,7 @@ module Api
                          .where(estados: { clave: params[:clave_estado] })
                          .first!
 
-          render json: @colonia, include: { municipio: { include: :estado } }
+          render json: @colonia, include: { municipio: { include: :estado } }, except: [:created_at, :updated_at]
         end
       end
 
@@ -38,7 +38,7 @@ module Api
         @colonias = @colonias.where(estados: { clave: params[:clave_estado] }) if params[:clave_estado].present?
         @colonias = @colonias.where(municipio_id: params[:municipio_id]) if params[:municipio_id].present?
         
-        render json: @colonias, include: { municipio: { include: :estado } }
+        render json: @colonias, include: { municipio: { include: :estado } }, except: [:created_at, :updated_at]
       end
 
       private

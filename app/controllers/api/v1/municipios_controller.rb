@@ -11,7 +11,7 @@ module Api
 
         @estado = Estado.find_by!(clave: estado_clave)
         @municipios = @estado.municipios.order(Arel.sql("CAST(clave AS INTEGER)"))
-        render json: @municipios
+        render json: @municipios, except: [:created_at, :updated_at]
       end
 
       def show
@@ -24,7 +24,7 @@ module Api
 
         @estado = Estado.find_by!(clave: estado_clave)
         @municipio = @estado.municipios.find_by!(clave: params[:id])
-        render json: @municipio, include: [:estado, :colonias]
+        render json: @municipio, include: [:estado, :colonias], except: [:created_at, :updated_at]
       end
 
       def search
@@ -33,7 +33,7 @@ module Api
         @municipios = @municipios.where('municipios.nombre ILIKE ?', "%#{params[:q]}%") if params[:q].present?
         @municipios = @municipios.where(estados: { clave: params[:clave_estado] }) if params[:clave_estado].present?
         
-        render json: @municipios, include: :estado
+        render json: @municipios, include: :estado, except: [:created_at, :updated_at]
       end
 
       private
