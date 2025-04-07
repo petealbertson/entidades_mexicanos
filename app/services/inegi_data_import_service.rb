@@ -1,5 +1,6 @@
 require 'roo'
 require 'smarter_csv'
+require 'uri'
 
 class InegiDataImportService
   def self.import(file_path)
@@ -8,7 +9,16 @@ class InegiDataImportService
 
   def initialize(file_path)
     @file_path = file_path
-    @extension = File.extname(file_path).downcase
+    begin
+      # Attempt to parse as URI and get path component
+      uri = URI.parse(file_path)
+      path = uri.path || file_path # Use original if no path component
+    rescue URI::InvalidURIError
+      # Fallback if it's not a valid URI (e.g., a local path)
+      path = file_path
+    end
+    # Get extension from the path component (or original path if parsing failed)
+    @extension = File.extname(path).downcase
   end
 
   def import
