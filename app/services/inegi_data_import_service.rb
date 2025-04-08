@@ -1,6 +1,7 @@
 require 'roo'
 require 'smarter_csv'
 require 'uri'
+require 'open-uri'
 
 class InegiDataImportService
   def self.import(file_path)
@@ -73,9 +74,19 @@ class InegiDataImportService
       }
     }
 
-    SmarterCSV.process(@file_path, options) do |chunk|
+    # Determine if the file_path is a URL
+    is_url = @file_path.start_with?('http://', 'https://')
+
+    # Open the file appropriately
+    file_source = is_url ? URI.open(@file_path) : @file_path
+
+    # Process using SmarterCSV
+    SmarterCSV.process(file_source, options) do |chunk|
       chunk.each { |row| process_row(row) }
     end
+  ensure
+    # Close the stream if we opened it from a URL
+    file_source.close if is_url && file_source.respond_to?(:close)
   end
 
   def process_row(row)
