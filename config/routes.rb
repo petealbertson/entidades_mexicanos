@@ -16,17 +16,9 @@ Rails.application.routes.draw do
         end
       end
       
-      resources :municipios, only: [:index, :show] do
-        collection do
-          get 'search'
-        end
-      end
+      resources :municipios, only: [:index, :show]
       
-      resources :colonias, only: [:index, :show] do
-        collection do
-          get 'search'
-        end
-      end
+      resources :colonias, only: [:index, :show]
     end
   end
 end

@@ -115,15 +115,16 @@ class InegiDataImportService
       m.nombre = municipio_nombre
     end
 
-    # Create colonia
-    Colonia.create!(
+    # Find or create colonia
+    Colonia.find_or_create_by!(
       clave: colonia_clave,
-      nombre: colonia_nombre,
-      municipio: municipio,
-      latitud: latitud,
-      longitud: longitud,
-      altitud_msm: altitud
-    )
+      municipio: municipio # Use the municipio found/created earlier
+    ) do |c|
+      c.nombre = colonia_nombre
+      c.latitud = latitud
+      c.longitud = longitud
+      c.altitud_msm = altitud
+    end
   end
 
   def generate_abbreviation(nombre)

@@ -1,51 +1,44 @@
 module Api
   module V1
     class ColoniasController < ApplicationController
-      before_action :set_municipio, if: -> { params[:estado_id].present? && params[:municipio_id].present? }
 
       def index
-        if params[:municipio_id]
-          @colonias = @municipio.colonias.order(Arel.sql("CAST(clave AS INTEGER)"))
-        else
-          @colonias = Colonia.order(Arel.sql("CAST(clave AS INTEGER)"))
-        end
-        render json: @colonias, except: [:created_at, :updated_at]
-      end
+        @colonias = Colonia.includes(municipio: :estado).order(Arel.sql("CAST(colonias.clave AS INTEGER)"))
 
-      def show
-        if params[:municipio_id]
-          @colonia = @municipio.colonias.find_by!(clave: params[:id])
-          render json: @colonia, include: { municipio: { include: :estado } }, except: [:created_at, :updated_at]
-        else
-          unless params[:clave_estado].present?
-            render json: { error: "clave_estado parameter is required" }, status: :unprocessable_entity
+        if params[:estado_id].present? && params[:municipio_id].present?
+          @estado = Estado.find_by(clave: params[:estado_id])
+          unless @estado
+            render json: { error: "Estado not found with clave: #{params[:estado_id]}" }, status: :not_found
             return
           end
-
-          @colonia = Colonia.joins(municipio: :estado)
-                         .where(clave: params[:id])
-                         .where(estados: { clave: params[:clave_estado] })
-                         .first!
-
-          render json: @colonia, include: { municipio: { include: :estado } }, except: [:created_at, :updated_at]
+          @municipio = @estado.municipios.find_by(clave: params[:municipio_id])
+          unless @municipio
+            render json: { error: "Municipio not found with clave: #{params[:municipio_id]} in Estado #{params[:estado_id]}" }, status: :not_found
+            return
+          end
+          @colonias = @colonias.where(municipio: @municipio)
         end
-      end
 
-      def search
-        @colonias = Colonia.joins(:municipio, municipio: :estado)
-        
-        @colonias = @colonias.where('colonias.nombre ILIKE ?', "%#{params[:q]}%") if params[:q].present?
-        @colonias = @colonias.where(estados: { clave: params[:clave_estado] }) if params[:clave_estado].present?
-        @colonias = @colonias.where(municipio_id: params[:municipio_id]) if params[:municipio_id].present?
-        
+        if params[:q].present?
+          @colonias = @colonias.where('colonias.nombre ILIKE ?', "%#{params[:q]}%")
+        end
+
         render json: @colonias, include: { municipio: { include: :estado } }, except: [:created_at, :updated_at]
       end
 
-      private
+      def show
+        if params[:estado_id].present? && params[:municipio_id].present?
+          @estado = Estado.find_by!(clave: params[:estado_id])
+          @municipio = @estado.municipios.find_by!(clave: params[:municipio_id])
+          @colonia = @municipio.colonias.find_by!(clave: params[:id])
+        else
+          @colonia = Colonia.includes(municipio: :estado).find(params[:id])
+        end
 
-      def set_municipio
-        @estado = Estado.find_by!(clave: params[:estado_id])
-        @municipio = @estado.municipios.find_by!(clave: params[:municipio_id])
+        render json: @colonia, include: { municipio: { include: :estado } }, except: [:created_at, :updated_at]
+
+      rescue ActiveRecord::RecordNotFound
+        render json: { error: "Record not found" }, status: :not_found
       end
     end
   end

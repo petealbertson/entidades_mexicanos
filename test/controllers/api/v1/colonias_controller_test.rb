@@ -25,15 +25,13 @@ class Api::V1::ColoniasControllerTest < ActionDispatch::IntegrationTest
     assert response_body.all? { |c| c['municipio_id'] == @municipio.id }
   end
 
-  test "should get show with clave_estado" do
-    get api_v1_colonia_url(@colonia.clave, clave_estado: @estado.clave)
+  test "should get direct show using primary key" do
+    get api_v1_colonia_url(@colonia.id)
     assert_response :success
     
     response_body = JSON.parse(response.body)
     assert_equal @colonia.nombre, response_body['nombre']
-    assert_equal @colonia.clave, response_body['clave']
-    assert_not_nil response_body['municipio']
-    assert_not_nil response_body['municipio']['estado']
+    assert_equal @colonia.id, response_body['id'] 
   end
 
   test "should get nested show" do
@@ -45,16 +43,8 @@ class Api::V1::ColoniasControllerTest < ActionDispatch::IntegrationTest
     assert_equal @colonia.clave, response_body['clave']
   end
 
-  test "should require clave_estado for direct show" do
-    get api_v1_colonia_url(@colonia.clave)
-    assert_response :unprocessable_entity
-    
-    response_body = JSON.parse(response.body)
-    assert_includes response_body['error'], 'clave_estado'
-  end
-
-  test "should search colonias" do
-    get search_api_v1_colonias_url, params: { q: @colonia.nombre[0..3] }
+  test "should find colonias via index search" do
+    get api_v1_colonias_url, params: { q: @colonia.nombre[0..3] }
     assert_response :success
     
     response_body = JSON.parse(response.body)
@@ -63,19 +53,21 @@ class Api::V1::ColoniasControllerTest < ActionDispatch::IntegrationTest
     assert response_body.any? { |c| c['nombre'].include?(@colonia.nombre[0..3]) }
   end
 
-  test "should filter search by estado" do
-    get search_api_v1_colonias_url, params: { clave_estado: @estado.clave }
+  test "should filter index by municipio (via nested route)" do
+    get api_v1_estado_municipio_colonias_url(@estado.clave, @municipio.clave)
+    assert_response :success
+    
+    response_body = JSON.parse(response.body)
+    assert response_body.all? { |c| c['municipio']['id'] == @municipio.id } 
+    assert response_body.all? { |c| c['municipio']['estado']['clave'] == @estado.clave } 
+  end
+
+  test "should filter index by estado and municipio (via nested route)" do
+    get api_v1_estado_municipio_colonias_url(@estado.clave, @municipio.clave), params: { clave_estado: @estado.clave } 
     assert_response :success
     
     response_body = JSON.parse(response.body)
     assert response_body.all? { |c| c['municipio']['estado']['clave'] == @estado.clave }
-  end
-
-  test "should filter search by municipio" do
-    get search_api_v1_colonias_url, params: { municipio_id: @municipio.id }
-    assert_response :success
-    
-    response_body = JSON.parse(response.body)
-    assert response_body.all? { |c| c['municipio_id'] == @municipio.id }
+    assert response_body.all? { |c| c['municipio']['clave'] == @municipio.clave }
   end
 end
