@@ -1,6 +1,8 @@
 module Api
   module V1
     class MunicipiosController < ApplicationController
+      include ::UmamiTrackable
+
       def index
         # Start with a base scope including the estado and ordered
         @municipios = Municipio.includes(:estado).order(Arel.sql("CAST(municipios.clave AS INTEGER)"))

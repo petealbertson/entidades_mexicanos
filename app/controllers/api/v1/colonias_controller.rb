@@ -1,6 +1,7 @@
 module Api
   module V1
     class ColoniasController < ApplicationController
+      include ::UmamiTrackable
 
       def index
         @colonias = Colonia.includes(municipio: :estado).order(Arel.sql("CAST(colonias.clave AS INTEGER)"))
